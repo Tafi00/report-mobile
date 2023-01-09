@@ -171,6 +171,8 @@ class _DetailCustomerPageState extends State<DetailCustomerPage> {
                           borderColor: Colors.transparent,
                           borderWidth: 5.0,
                           height: 40,
+                          indicatorColor: Colors.white,
+                          innerColor: Colors.white,
                           boxShadow: const [
                             BoxShadow(
                               color: Colors.black26,

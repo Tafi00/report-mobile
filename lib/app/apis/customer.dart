@@ -99,13 +99,54 @@ class CustomerApi {
   Future createScheduleRequest(Map params) async {
     try {
       final accessToken = await getAccessToken();
-      final response = await dio.post(
-        createPlanApi,
+      final response = await dio.post(createPlanApi,
+          options: Options(headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $accessToken"
+          }),
+          data: jsonEncode(params));
+      return response.data;
+    } on DioError catch (e) {
+      final response = e.response;
+      if (response != null) {
+        return response.data;
+      } else {
+        print(e.requestOptions);
+        print(e.message);
+      }
+    }
+  }
+
+  Future updateScheduleRequest(Map params, id) async {
+    try {
+      final accessToken = await getAccessToken();
+      final response = await dio.patch('$updatePlanApi$id',
+          options: Options(headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $accessToken"
+          }),
+          data: jsonEncode(params));
+      return response.data;
+    } on DioError catch (e) {
+      final response = e.response;
+      if (response != null) {
+        return response.data;
+      } else {
+        print(e.requestOptions);
+        print(e.message);
+      }
+    }
+  }
+
+  Future deleteScheduleRequest(id) async {
+    try {
+      final accessToken = await getAccessToken();
+      final response = await dio.delete(
+        '$deletePlanApi$id',
         options: Options(headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $accessToken"
         }),
-        data: jsonEncode(params),
       );
       return response.data;
     } on DioError catch (e) {

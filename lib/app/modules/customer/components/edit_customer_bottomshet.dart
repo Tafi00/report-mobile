@@ -24,13 +24,13 @@ void showEditCustomerBottomSheet(String customerId) {
   controller.fetchDetailCustomer(customerId).then((value) => {
         nameController.text = controller.dataDetailCustomer['name'],
         companyController.text = controller.dataDetailCustomer['company'],
-        phoneController.text = controller.dataDetailCustomer['phone'],
-        emailController.text = controller.dataDetailCustomer['email'],
+        phoneController.text = controller.dataDetailCustomer['phone'] ?? '',
+        emailController.text = controller.dataDetailCustomer['email'] ?? '',
         contactNameController.text =
-            controller.dataDetailCustomer['contactName'],
-        addressController.text = controller.dataDetailCustomer['address'],
+            controller.dataDetailCustomer['contactName'] ?? '',
+        addressController.text = controller.dataDetailCustomer['address'] ?? '',
         descriptionController.text =
-            controller.dataDetailCustomer['description'],
+            controller.dataDetailCustomer['description'] ?? '',
         controller.base64Image.value = controller.dataDetailCustomer['avatar']
             .replaceFirst('data:image/png;base64,', '')
             .replaceFirst('data:image/jpeg;base64,', '')

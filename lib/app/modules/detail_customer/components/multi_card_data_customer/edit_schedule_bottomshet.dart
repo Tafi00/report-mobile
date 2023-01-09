@@ -1,46 +1,50 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:report_azvidi/app/apis/customer.dart';
-import 'package:report_azvidi/app/modules/customer/customer_controller.dart';
 import 'package:report_azvidi/app/modules/detail_customer/components/drop_down_project.dart';
 import 'package:report_azvidi/app/modules/detail_customer/detail_customer_controller.dart';
 import 'package:report_azvidi/app/utils/date_dialog.dart';
 import 'package:report_azvidi/app/utils/elevated_btn.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-void showEditScheduleBottomSheet() {
+import '../add_project_bottomsheet.dart';
+
+Future<void> showEditScheduleBottomSheet(String planId) async {
   final formKey = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController projectIdController = TextEditingController();
   TextEditingController contractIdController = TextEditingController();
-  TextEditingController azCrmProjectIdController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
-  TextEditingController azCrmProjectNameController = TextEditingController();
-  TextEditingController percentQualifiedleadController =
-      TextEditingController();
   TextEditingController feeController = TextEditingController();
   TextEditingController objectiveController = TextEditingController();
   TextEditingController targetController = TextEditingController();
 
   DetailCustomerController controller = Get.put(DetailCustomerController());
+  controller.dropdownProjectValue.value = '';
+  await CustomerApi().getPlanInfoApiRequest(planId).then((value) => {
+        controller.dropdownProjectValue.value = value['content']['projectName'],
+        controller.startDateSchedule.value = DateFormat('dd/MM/yyyy')
+            .format(DateTime.parse(value['content']['startDate'])),
+        controller.endDateSchedule.value = DateFormat('dd/MM/yyyy')
+            .format(DateTime.parse(value['content']['endDate'])),
+        nameController.text = value['content']['name'],
+        contractIdController.text = value['content']['contractId'],
+        feeController.text = value['content']['fee'].toStringAsFixed(0),
+        objectiveController.text = value['content']['objective'],
+        targetController.text = value['content']['target'],
+      });
+
   Get.bottomSheet(
     Form(
       key: formKey,
-      child: Container(
-        width: double.infinity,
-        height: Get.height * 0.7,
-        padding: const EdgeInsets.only(left: 14, right: 14),
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: SizedBox(
-            height: Get.height * 0.8,
+      child: Wrap(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(left: 14, right: 14),
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(10)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -52,7 +56,7 @@ void showEditScheduleBottomSheet() {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Thêm phụ lục',
+                      'Sửa phụ lục',
                       style: TextStyle(
                           color: Color(0xFF333333),
                           fontWeight: FontWeight.bold,
@@ -83,7 +87,26 @@ void showEditScheduleBottomSheet() {
                       'Dự án *',
                       style: TextStyle(color: Color(0xFF828282), fontSize: 14),
                     ),
-                    buildDropDownProject()
+                    SizedBox(
+                      width: Get.width * 0.55,
+                      child: Row(
+                        children: [
+                          buildDropDownProject(),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              showAddProjectBottomSheet();
+                            },
+                            child: const Icon(
+                              Icons.add_circle_outline,
+                              size: 35,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(
@@ -107,11 +130,12 @@ void showEditScheduleBottomSheet() {
                           }
                           return null;
                         },
+                        keyboardType: TextInputType.multiline,
                         controller: nameController,
                         decoration: InputDecoration(
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 13, vertical: 15),
+                                horizontal: 13, vertical: 6),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
                                 borderSide: const BorderSide(
@@ -135,12 +159,12 @@ void showEditScheduleBottomSheet() {
                       constraints: const BoxConstraints(minHeight: 30),
                       width: Get.width * 0.55,
                       child: TextFormField(
-                        validator: (value) {},
+                        keyboardType: TextInputType.multiline,
                         controller: contractIdController,
                         decoration: InputDecoration(
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 13, vertical: 15),
+                                horizontal: 13, vertical: 6),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
                                 borderSide: const BorderSide(
@@ -222,7 +246,13 @@ void showEditScheduleBottomSheet() {
                       child: TextFormField(
                         controller: feeController,
                         keyboardType: TextInputType.number,
-                        validator: (value) {},
+                        validator: (value) {
+                          if (!(RegExp(
+                                  r"\b(?<!\.)(?!0+(?:\.0+)?%)(?:\d|[1-9]\d|100)(?:(?<!100)\.\d+)?")
+                              .hasMatch(value!))) {
+                            return 'Giá trị không hợp lệ';
+                          }
+                        },
                         decoration: InputDecoration(
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(
@@ -235,36 +265,37 @@ void showEditScheduleBottomSheet() {
                     )
                   ],
                 ),
-                const SizedBox(
-                  height: 12,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Liên kết CRM',
-                      style: TextStyle(color: Color(0xFF828282), fontSize: 14),
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(minHeight: 30),
-                      width: Get.width * 0.55,
-                      child: TextFormField(
-                        controller: azCrmProjectNameController,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) {},
-                        decoration: InputDecoration(
-                            isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 13, vertical: 7),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(6),
-                                borderSide: const BorderSide(
-                                    color: Color(0xFF828282)))),
-                      ),
-                    )
-                  ],
-                ),
+                // const SizedBox(
+                //   height: 12,
+                // ),
+                // Row(
+                //   crossAxisAlignment: CrossAxisAlignment.center,
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     const Text(
+                //       'Liên kết CRM',
+                //       style:
+                //           TextStyle(color: Color(0xFF828282), fontSize: 14),
+                //     ),
+                //     Container(
+                //       constraints: const BoxConstraints(minHeight: 30),
+                //       width: Get.width * 0.55,
+                //       child: TextFormField(
+                //         controller: azCrmProjectNameController,
+                //         keyboardType: TextInputType.emailAddress,
+                //         validator: (value) {},
+                //         decoration: InputDecoration(
+                //             isDense: true,
+                //             contentPadding: const EdgeInsets.symmetric(
+                //                 horizontal: 13, vertical: 7),
+                //             border: OutlineInputBorder(
+                //                 borderRadius: BorderRadius.circular(6),
+                //                 borderSide: const BorderSide(
+                //                     color: Color(0xFF828282)))),
+                //       ),
+                //     )
+                //   ],
+                // ),
                 const SizedBox(
                   height: 12,
                 ),
@@ -281,10 +312,12 @@ void showEditScheduleBottomSheet() {
                       width: Get.width * 0.55,
                       child: TextFormField(
                         controller: targetController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 2,
                         decoration: InputDecoration(
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 13, vertical: 15),
+                                horizontal: 13, vertical: 6),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
                                 borderSide: const BorderSide(
@@ -309,10 +342,12 @@ void showEditScheduleBottomSheet() {
                       width: Get.width * 0.55,
                       child: TextFormField(
                         controller: objectiveController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 2,
                         decoration: InputDecoration(
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 13, vertical: 15),
+                                horizontal: 13, vertical: 6),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
                                 borderSide: const BorderSide(
@@ -348,26 +383,60 @@ void showEditScheduleBottomSheet() {
                     ElevatedButton(
                         onPressed: () async {
                           FocusManager.instance.primaryFocus?.unfocus();
+
                           if (formKey.currentState!.validate()) {
+                            final startDate = DateFormat('yyyy-MM-dd').format(
+                                DateFormat('dd/MM/yyyy')
+                                    .parse(controller.startDateSchedule.value));
+                            final endDate = DateFormat('yyyy-MM-dd').format(
+                                DateFormat('dd/MM/yyyy')
+                                    .parse(controller.endDateSchedule.value));
+
                             final dataRequest =
                                 await CustomerApi().createScheduleRequest({
                               "name": nameController.text,
-                              "projectId": projectIdController.text,
+                              "projectId": controller.listPagingProjectId[
+                                  controller.listPagingProjectString.indexOf(
+                                      controller.dropdownProjectValue.value)],
                               "contractId": contractIdController.text,
-                              "startDate": controller.startDateSchedule.value,
-                              "endDate": controller.endDateSchedule.value,
-                              "description": descriptionController.text,
-                              "percentQualifiedlead":
-                                  percentQualifiedleadController.text,
+                              "startDate": startDate,
+                              "endDate": endDate,
                               "fee": feeController.text,
                               "objective": objectiveController.text,
                               "target": targetController.text,
                             });
-                            if (dataRequest['code'] == 0) {
-                              Get.snackbar(
-                                  'Thành công', 'Khách hàng đã được thêm');
+                            Get.back();
+                            if (dataRequest['code'] == 201) {
+                              AwesomeDialog(
+                                context: Get.context!,
+                                animType: AnimType.leftSlide,
+                                headerAnimationLoop: false,
+                                dialogType: DialogType.success,
+                                showCloseIcon: true,
+                                title: 'Thành công',
+                                desc: 'Thêm phụ lục thành công',
+                                btnOkOnPress: () {
+                                  debugPrint('OnClcik');
+                                },
+                                btnOkIcon: Icons.check_circle,
+                                onDismissCallback: (type) {
+                                  debugPrint(
+                                      'Dialog Dissmiss from callback $type');
+                                },
+                              ).show();
+                              controller.refreshData();
                             } else {
-                              Get.snackbar('Oh no!', 'Đã có lỗi xảy ra');
+                              AwesomeDialog(
+                                context: Get.context!,
+                                dialogType: DialogType.error,
+                                animType: AnimType.rightSlide,
+                                headerAnimationLoop: false,
+                                title: 'Lỗi',
+                                desc: dataRequest['message'],
+                                btnOkOnPress: () {},
+                                btnOkIcon: Icons.cancel,
+                                btnOkColor: Colors.red,
+                              ).show();
                             }
                           }
                         },
@@ -390,11 +459,9 @@ void showEditScheduleBottomSheet() {
               ],
             ),
           ),
-        ),
+        ],
       ),
     ),
-    enableDrag: true,
     isScrollControlled: true,
-    ignoreSafeArea: false,
   );
 }

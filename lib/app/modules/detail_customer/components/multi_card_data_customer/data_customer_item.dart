@@ -96,7 +96,7 @@ Widget buildDataCustomerItem({required Map dataItem}) {
                       const Spacer(),
                       IconButton(
                           onPressed: () {
-                            showModelBottomSheet();
+                            showModelBottomSheet(dataItem);
                           },
                           icon: const Icon(
                             Icons.more_vert,

@@ -38,9 +38,11 @@ class DetailCustomerController extends GetxController {
   RxList listDataPlanReportSearch = [].obs;
   RxList listPagingProject = [].obs;
   List<String> listPagingProjectString = <String>[].obs;
+  List<String> listPagingProjectId = <String>[].obs;
+
   RxList<ProfitModel> chartPlanData = <ProfitModel>[].obs;
   RxList<ProfitModel> chartData = <ProfitModel>[].obs;
-  final dropdownProjectValue = ''.obs;
+  RxString dropdownProjectValue = ''.obs;
   final isLoading = false.obs;
 
   @override
@@ -91,10 +93,7 @@ class DetailCustomerController extends GetxController {
     fetchSummaryCount();
     fetchDetailCustomer(idCustomer.value);
     fetchSummaryDashboardCustomer();
-    fetchListPagingProject().then((value) => {
-          if (listPagingProjectString.isNotEmpty)
-            dropdownProjectValue.value = listPagingProjectString[0],
-        });
+    fetchListPagingProject();
   }
 
   void toggleShowMore() {
@@ -146,12 +145,18 @@ class DetailCustomerController extends GetxController {
   Future fetchListPagingProject() async {
     listPagingProject.clear();
     listPagingProjectString.clear();
+    listPagingProjectId.clear();
+
     final dataListPagingProjectRequest =
         await ProjectApi().getListPagingProjectRequest(idCustomer.value);
     if (dataListPagingProjectRequest?['code'] == 0) {
       listPagingProject.value = dataListPagingProjectRequest['content'];
+
       for (var x in listPagingProject) {
         listPagingProjectString.add(x['name']);
+      }
+      for (var x in listPagingProject) {
+        listPagingProjectId.add(x['projectId']);
       }
     } else {
       Get.snackbar('Lỗi', dataListPagingProjectRequest?['message']);

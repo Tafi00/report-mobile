@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -31,6 +32,10 @@ void showAddScheduleBottomSheet() {
   TextEditingController targetController = TextEditingController();
 
   DetailCustomerController controller = Get.put(DetailCustomerController());
+  controller.dropdownProjectValue.value = '';
+  controller.startDateSchedule.value = '01/01/2023';
+  controller.endDateSchedule.value =
+      DateFormat('dd/MM/yyyy').format(DateTime.now());
   Get.bottomSheet(
     Form(
       key: formKey,
@@ -127,7 +132,6 @@ void showAddScheduleBottomSheet() {
                           return null;
                         },
                         keyboardType: TextInputType.multiline,
-                        maxLines: 2,
                         controller: nameController,
                         decoration: InputDecoration(
                             isDense: true,
@@ -157,7 +161,6 @@ void showAddScheduleBottomSheet() {
                       width: Get.width * 0.55,
                       child: TextFormField(
                         keyboardType: TextInputType.multiline,
-                        maxLines: 2,
                         controller: contractIdController,
                         decoration: InputDecoration(
                             isDense: true,
@@ -244,7 +247,13 @@ void showAddScheduleBottomSheet() {
                       child: TextFormField(
                         controller: feeController,
                         keyboardType: TextInputType.number,
-                        validator: (value) {},
+                        validator: (value) {
+                          if (!(RegExp(
+                                  r"\b(?<!\.)(?!0+(?:\.0+)?%)(?:\d|[1-9]\d|100)(?:(?<!100)\.\d+)?")
+                              .hasMatch(value!))) {
+                            return 'Giá trị không hợp lệ';
+                          }
+                        },
                         decoration: InputDecoration(
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(
@@ -383,26 +392,52 @@ void showAddScheduleBottomSheet() {
                             final endDate = DateFormat('yyyy-MM-dd').format(
                                 DateFormat('dd/MM/yyyy')
                                     .parse(controller.endDateSchedule.value));
+
                             final dataRequest =
                                 await CustomerApi().createScheduleRequest({
                               "name": nameController.text,
-                              "projectId": projectIdController.text,
+                              "projectId": controller.listPagingProjectId[
+                                  controller.listPagingProjectString.indexOf(
+                                      controller.dropdownProjectValue!.value!)],
                               "contractId": contractIdController.text,
                               "startDate": startDate,
                               "endDate": endDate,
-                              "description": descriptionController.text,
-                              "percentQualifiedlead":
-                                  percentQualifiedleadController.text,
                               "fee": feeController.text,
                               "objective": objectiveController.text,
                               "target": targetController.text,
                             });
-                            print(dataRequest);
-                            if (dataRequest['code'] == 0) {
-                              Get.snackbar(
-                                  'Thành công', 'Khách hàng đã được thêm');
+                            Get.back();
+                            if (dataRequest['code'] == 201) {
+                              AwesomeDialog(
+                                context: Get.context!,
+                                animType: AnimType.leftSlide,
+                                headerAnimationLoop: false,
+                                dialogType: DialogType.success,
+                                showCloseIcon: true,
+                                title: 'Thành công',
+                                desc: 'Thêm phụ lục thành công',
+                                btnOkOnPress: () {
+                                  debugPrint('OnClcik');
+                                },
+                                btnOkIcon: Icons.check_circle,
+                                onDismissCallback: (type) {
+                                  debugPrint(
+                                      'Dialog Dissmiss from callback $type');
+                                },
+                              ).show();
+                              controller.refreshData();
                             } else {
-                              Get.snackbar('Oh no!', 'Đã có lỗi xảy ra');
+                              AwesomeDialog(
+                                context: Get.context!,
+                                dialogType: DialogType.error,
+                                animType: AnimType.rightSlide,
+                                headerAnimationLoop: false,
+                                title: 'Lỗi',
+                                desc: dataRequest['message'],
+                                btnOkOnPress: () {},
+                                btnOkIcon: Icons.cancel,
+                                btnOkColor: Colors.red,
+                              ).show();
                             }
                           }
                         },

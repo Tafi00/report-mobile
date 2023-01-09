@@ -26,6 +26,9 @@ Widget buildDropDownProject() {
         //comment this if you want that the items do not takes all available height
         constraints: BoxConstraints.tightFor(),
       ),
+      selectedItem: controller.dropdownProjectValue.value == ''
+          ? null
+          : controller.dropdownProjectValue.value,
       validator: (String? item) {
         if (item == null) {
           return "Hãy chọn dự án";
