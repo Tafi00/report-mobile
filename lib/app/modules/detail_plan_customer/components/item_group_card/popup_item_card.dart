@@ -737,29 +737,32 @@ Future<void> buildBottomSheetDialog(
                             ),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                          onPressed: () async {
-                            final dataPlanDetail = await controller
-                                .fetchDataDetailWithTimelineKpi(controller
-                                    .dataDetailReportTimeline['planDetailId']);
-                            showEditPlanBottomSheet(dataPlanDetail,
-                                controller.dataDetailReportTimeline);
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF3949AB),
-                              padding: const EdgeInsets.only(
-                                  bottom: 5, top: 5, left: 18, right: 18),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(60))),
-                          child: const Text(
-                            'Chỉnh sửa',
-                            style: TextStyle(color: Colors.white, fontSize: 13),
-                          ))
-                    ],
-                  )
+                  if (controller.dataDetailPlanInfo['status'] != 1)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () async {
+                              final dataPlanDetail = await controller
+                                  .fetchDataDetailWithTimelineKpi(
+                                      controller.dataDetailReportTimeline[
+                                          'planDetailId']);
+                              showEditPlanBottomSheet(dataPlanDetail,
+                                  controller.dataDetailReportTimeline);
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF3949AB),
+                                padding: const EdgeInsets.only(
+                                    bottom: 5, top: 5, left: 18, right: 18),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(60))),
+                            child: const Text(
+                              'Chỉnh sửa',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 13),
+                            ))
+                      ],
+                    )
                 ],
               ),
             ),

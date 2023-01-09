@@ -27,7 +27,7 @@ class ManageAccountController extends GetxController {
   @override
   void onInit() {
     UserApi().getUserInfo().then((value) => {
-          dataUser.value = value,
+          dataUser.value = value!,
           fullNameController.text = value['fullName'] ?? '',
           positionController.text = value['position'] ?? "",
           phoneController.text = value['phone'] ?? "",

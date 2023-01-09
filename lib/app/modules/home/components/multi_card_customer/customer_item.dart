@@ -24,7 +24,7 @@ class CustomerItem extends StatelessWidget {
       child: Wrap(
         children: [
           Container(
-            width: 345,
+            width: double.infinity,
             decoration: BoxDecoration(
                 color: const Color(0xFFFAFEFF),
                 borderRadius: BorderRadius.circular(8)),
@@ -76,7 +76,8 @@ class CustomerItem extends StatelessWidget {
                       const Spacer(),
                       ElevatedBtn(
                         onPressed: () {
-                          showModelBottomSheet();
+                          showModelBottomSheet(customerCardModel.customerId,
+                              customerCardModel.customerName);
                         },
                         circular: 50,
                         paddingAllValue: 0,

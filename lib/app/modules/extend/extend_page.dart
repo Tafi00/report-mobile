@@ -51,7 +51,7 @@ class ExtendPage extends StatelessWidget {
             const SizedBox(
               height: 4,
             ),
-            Text('v1.0.19')
+            Text('v1.0.20')
           ],
         )));
       },

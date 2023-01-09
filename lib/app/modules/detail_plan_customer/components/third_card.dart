@@ -10,7 +10,6 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 Widget buildThirdCard() {
   return GetBuilder<DetailPlanController>(
-    assignId: true,
     builder: (controller) {
       return Container(
         width: double.infinity,

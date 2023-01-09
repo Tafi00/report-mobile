@@ -7,7 +7,6 @@ import '../detail_customer_controller.dart';
 
 Widget buildSecondCard() {
   return GetBuilder<DetailCustomerController>(
-    assignId: true,
     builder: (controller) {
       return Container(
         width: double.infinity,

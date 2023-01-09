@@ -40,7 +40,8 @@ Widget buildFirstCard() {
                             fontWeight: FontWeight.bold,
                             fontSize: 15),
                       ),
-                      SvgPicture.asset('assets/icons/edit_icon.svg')
+                      if (controller.dataDetailPlanInfo['status'] != 1)
+                        SvgPicture.asset('assets/icons/edit_icon.svg')
                     ],
                   ),
                   const SizedBox(

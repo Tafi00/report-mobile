@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -106,7 +107,7 @@ void showAddCustomerBottomSheet() {
                       style: TextStyle(color: Color(0xFF828282), fontSize: 14),
                     ),
                     Container(
-                      constraints: const BoxConstraints(minHeight: 50),
+                      constraints: const BoxConstraints(minHeight: 30),
                       width: Get.width * 0.55,
                       child: TextFormField(
                         validator: (value) {
@@ -116,10 +117,12 @@ void showAddCustomerBottomSheet() {
                           return null;
                         },
                         controller: companyController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 2,
                         decoration: InputDecoration(
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 13, vertical: 15),
+                                horizontal: 13, vertical: 8),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
                                 borderSide: const BorderSide(
@@ -279,10 +282,12 @@ void showAddCustomerBottomSheet() {
                       width: Get.width * 0.55,
                       child: TextFormField(
                         controller: addressController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 2,
                         decoration: InputDecoration(
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 13, vertical: 15),
+                                horizontal: 8, vertical: 8),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
                                 borderSide: const BorderSide(
@@ -307,10 +312,12 @@ void showAddCustomerBottomSheet() {
                       width: Get.width * 0.55,
                       child: TextFormField(
                         controller: descriptionController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 2,
                         decoration: InputDecoration(
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 13, vertical: 15),
+                                horizontal: 8, vertical: 8),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(6),
                                 borderSide: const BorderSide(
@@ -356,14 +363,42 @@ void showAddCustomerBottomSheet() {
                               "contactName": contactNameController.text,
                               "address": addressController.text,
                               "description": descriptionController.text,
-                              "avatar": controller.base64Image.value
+                              "avatar":
+                                  'data:image/png;base64,${controller.base64Image.value}'
                             });
                             Get.back();
-                            if (dataRequest['code'] == 0) {
-                              Get.snackbar(
-                                  'Thành công', 'Khách hàng đã được thêm');
+                            Get.back();
+                            if (dataRequest['code'] == 201) {
+                              AwesomeDialog(
+                                context: Get.context!,
+                                animType: AnimType.leftSlide,
+                                headerAnimationLoop: false,
+                                dialogType: DialogType.success,
+                                showCloseIcon: true,
+                                title: 'Thành công',
+                                desc: 'Thêm khách hàng thành công',
+                                btnOkOnPress: () {
+                                  debugPrint('OnClcik');
+                                },
+                                btnOkIcon: Icons.check_circle,
+                                onDismissCallback: (type) {
+                                  debugPrint(
+                                      'Dialog Dissmiss from callback $type');
+                                },
+                              ).show();
+                              controller.refreshData();
                             } else {
-                              Get.snackbar('Oh no!', 'Đã có lỗi xảy ra');
+                              AwesomeDialog(
+                                context: Get.context!,
+                                dialogType: DialogType.error,
+                                animType: AnimType.rightSlide,
+                                headerAnimationLoop: false,
+                                title: 'Lỗi',
+                                desc: dataRequest['message'],
+                                btnOkOnPress: () {},
+                                btnOkIcon: Icons.cancel,
+                                btnOkColor: Colors.red,
+                              ).show();
                             }
                           }
                         },

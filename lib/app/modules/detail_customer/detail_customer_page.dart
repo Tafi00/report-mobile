@@ -97,7 +97,8 @@ class _DetailCustomerPageState extends State<DetailCustomerPage> {
                                   controller.isLoading.value = true;
                                   controller.fetchSummaryCount();
                                   controller.fetchListPlanReport();
-                                  controller.fetchDetailCustomer();
+                                  controller.fetchDetailCustomer(
+                                      controller.idCustomer.value);
                                   controller.fetchSummaryDashboardCustomer();
                                 }, controller.startDatePicker.value,
                                     controller.endDatePicker.value);
@@ -147,6 +148,9 @@ class _DetailCustomerPageState extends State<DetailCustomerPage> {
                             buildDataCustomer(controller
                                 .listDataPlanReport.reversed
                                 .toList()),
+                            const SizedBox(
+                              height: 20,
+                            ),
                           ],
                         ),
                       ),

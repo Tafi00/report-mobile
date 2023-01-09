@@ -375,14 +375,21 @@ void showAddScheduleBottomSheet() {
                     ElevatedButton(
                         onPressed: () async {
                           FocusManager.instance.primaryFocus?.unfocus();
+
                           if (formKey.currentState!.validate()) {
+                            final startDate = DateFormat('yyyy-MM-dd').format(
+                                DateFormat('dd/MM/yyyy')
+                                    .parse(controller.startDateSchedule.value));
+                            final endDate = DateFormat('yyyy-MM-dd').format(
+                                DateFormat('dd/MM/yyyy')
+                                    .parse(controller.endDateSchedule.value));
                             final dataRequest =
                                 await CustomerApi().createScheduleRequest({
                               "name": nameController.text,
                               "projectId": projectIdController.text,
                               "contractId": contractIdController.text,
-                              "startDate": controller.startDateSchedule.value,
-                              "endDate": controller.endDateSchedule.value,
+                              "startDate": startDate,
+                              "endDate": endDate,
                               "description": descriptionController.text,
                               "percentQualifiedlead":
                                   percentQualifiedleadController.text,
@@ -390,6 +397,7 @@ void showAddScheduleBottomSheet() {
                               "objective": objectiveController.text,
                               "target": targetController.text,
                             });
+                            print(dataRequest);
                             if (dataRequest['code'] == 0) {
                               Get.snackbar(
                                   'Thành công', 'Khách hàng đã được thêm');

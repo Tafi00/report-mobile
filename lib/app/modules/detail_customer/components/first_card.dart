@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:report_azvidi/app/modules/detail_customer/components/edit_customer_bottomshet.dart';
 import 'package:report_azvidi/app/modules/detail_customer/detail_customer_controller.dart';
 import 'package:report_azvidi/app/utils/elevated_btn.dart';
 
 Widget buildFirstCard() {
   return GetBuilder<DetailCustomerController>(
-    assignId: true,
     builder: (controller) {
       return Obx(() => Container(
             padding:
@@ -38,7 +38,13 @@ Widget buildFirstCard() {
                               fontWeight: FontWeight.bold,
                               fontSize: 15),
                         ),
-                        SvgPicture.asset('assets/icons/edit_icon.svg')
+                        GestureDetector(
+                            onTap: () {
+                              showEditCustomerBottomSheet(
+                                  controller.idCustomer.value);
+                            },
+                            child:
+                                SvgPicture.asset('assets/icons/edit_icon.svg'))
                       ],
                     ),
                     const SizedBox(

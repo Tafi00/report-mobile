@@ -25,12 +25,14 @@ class NotifyController extends GetxController {
     // try {
     listNotify.clear();
     final listNotifyRequest = await NotifyApi().getListNotifyRequest();
-    if (listNotifyRequest?['code'] == 0) {
-      listNotify.value = listNotifyRequest['content'];
-      isLoading.value = false;
-    } else {
-      Get.snackbar('Oh no!', 'Đã có lỗi xảy ra');
-      isLoading.value = false;
+    if (listNotifyRequest is! String) {
+      if (listNotifyRequest?['code'] == 0) {
+        listNotify.value = listNotifyRequest['content'];
+        isLoading.value = false;
+      } else {
+        Get.snackbar('Oh no!', 'Đã có lỗi xảy ra');
+        isLoading.value = false;
+      }
     }
     update();
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:report_azvidi/app/apis/customer.dart';
 import 'package:report_azvidi/app/apis/project.dart';
@@ -25,7 +26,9 @@ class DetailCustomerController extends GetxController {
       DateFormat('dd/MM/yyyy').format(DateTime.now()).obs;
   MainController mainController = Get.put(MainController());
   CustomerController customerController = Get.put(CustomerController());
+  final base64Image = ''.obs;
 
+  final ImagePicker picker = ImagePicker();
   final startDatePicker = '01/01/2023'.obs;
   final endDatePicker = DateFormat('dd/MM/yyyy').format(DateTime.now()).obs;
   final PageController pageController = PageController(initialPage: 0);
@@ -86,10 +89,11 @@ class DetailCustomerController extends GetxController {
 
     fetchListPlanReport();
     fetchSummaryCount();
-    fetchDetailCustomer();
+    fetchDetailCustomer(idCustomer.value);
     fetchSummaryDashboardCustomer();
     fetchListPagingProject().then((value) => {
-          dropdownProjectValue.value = listPagingProjectString[0],
+          if (listPagingProjectString.isNotEmpty)
+            dropdownProjectValue.value = listPagingProjectString[0],
         });
   }
 
@@ -118,7 +122,8 @@ class DetailCustomerController extends GetxController {
       dataSummaryCount.value = dataSummaryCountRequest['content'];
       isLoading.value = false;
     } else {
-      Get.snackbar('Oh no!', 'Đã có lỗi xảy ra');
+      Get.snackbar('Lỗi', dataSummaryCountRequest?['message']);
+
       isLoading.value = false;
     }
     update();
@@ -133,7 +138,7 @@ class DetailCustomerController extends GetxController {
       listDataPlanReport.value = dataPlanReportRequest['content'];
       print(listDataPlanReport);
     } else {
-      Get.snackbar('Oh no!', 'Đã có lỗi xảy ra');
+      Get.snackbar('Lỗi', dataPlanReportRequest?['message']);
     }
     update();
   }
@@ -149,7 +154,7 @@ class DetailCustomerController extends GetxController {
         listPagingProjectString.add(x['name']);
       }
     } else {
-      Get.snackbar('Oh no!', 'Đã có lỗi xảy ra');
+      Get.snackbar('Lỗi', dataListPagingProjectRequest?['message']);
     }
     update();
   }
@@ -164,21 +169,21 @@ class DetailCustomerController extends GetxController {
           dataCustomerCardModelRequest['content'];
       isLoading.value = false;
     } else {
-      Get.snackbar('Oh no!', 'Đã có lỗi xảy ra');
+      Get.snackbar('Lỗi', dataCustomerCardModelRequest?['message']);
       isLoading.value = false;
     }
     update();
   }
 
-  Future fetchDetailCustomer() async {
+  Future fetchDetailCustomer(String customerId) async {
     dataDetailCustomer.clear();
     final dataDetailCustomerRequest =
-        await CustomerApi().getDetailCustomerRequest(idCustomer.value);
+        await CustomerApi().getDetailCustomerRequest(customerId);
     if (dataDetailCustomerRequest['code'] == 0) {
       dataDetailCustomer.value = dataDetailCustomerRequest['content'];
       print(dataDetailCustomer);
     } else {
-      Get.snackbar('Oh no!', 'Đã có lỗi xảy ra');
+      Get.snackbar('Lỗi', dataDetailCustomerRequest?['message']);
     }
     update();
   }

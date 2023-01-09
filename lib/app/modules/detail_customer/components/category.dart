@@ -8,7 +8,6 @@ import '../../../utils/constants.dart';
 
 Widget buildCategory(int index) {
   return GetBuilder<DetailCustomerController>(
-    assignId: true,
     builder: (controller) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,

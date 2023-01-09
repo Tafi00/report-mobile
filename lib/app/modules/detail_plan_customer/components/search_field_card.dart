@@ -58,31 +58,32 @@ Widget buildSearchField() {
               width: 9,
             ),
             const Spacer(),
-            ElevatedBtn(
-              paddingAllValue: 10,
-              circular: 4,
-              onPressed: () {
-                showAddPlanBottomSheet();
-              },
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/plus.svg',
-                  ),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  const Text(
-                    'Thêm',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Color(0XFF3949AB)),
-                  )
-                ],
-              ),
-            )
+            if (controller.dataDetailPlanInfo['status'] != 1)
+              ElevatedBtn(
+                paddingAllValue: 10,
+                circular: 4,
+                onPressed: () {
+                  showAddPlanBottomSheet();
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/icons/plus.svg',
+                    ),
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    const Text(
+                      'Thêm',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: Color(0XFF3949AB)),
+                    )
+                  ],
+                ),
+              )
           ],
         ),
       );

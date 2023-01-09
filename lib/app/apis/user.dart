@@ -32,6 +32,7 @@ class UserApi {
         print(e.message);
       }
     }
+    return null;
   }
 
   Future clearCache() async {

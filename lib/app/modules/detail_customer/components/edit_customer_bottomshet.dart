@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:report_azvidi/app/apis/customer.dart';
 import 'package:report_azvidi/app/modules/customer/customer_controller.dart';
+import 'package:report_azvidi/app/modules/detail_customer/detail_customer_controller.dart';
 import 'package:report_azvidi/app/utils/elevated_btn.dart';
 
 import '../../../utils/constants.dart';
@@ -20,7 +21,7 @@ void showEditCustomerBottomSheet(String customerId) {
   TextEditingController contactNameController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
-  CustomerController controller = Get.put(CustomerController());
+  DetailCustomerController controller = Get.put(DetailCustomerController());
   controller.fetchDetailCustomer(customerId).then((value) => {
         nameController.text = controller.dataDetailCustomer['name'],
         companyController.text = controller.dataDetailCustomer['company'],

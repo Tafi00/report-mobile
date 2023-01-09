@@ -18,7 +18,9 @@ class CustomerController extends GetxController {
   MainController mainController = Get.put(MainController());
   final startDatePicker = '01/01/2023'.obs;
   final endDatePicker = DateFormat('dd/MM/yyyy').format(DateTime.now()).obs;
+  RxMap dataDetailCustomer = {}.obs;
   final base64Image = ''.obs;
+
   final ImagePicker picker = ImagePicker();
 
   RxList<MarketingCustomerModel> dataListRunning =
@@ -44,6 +46,19 @@ class CustomerController extends GetxController {
   void refreshData() async {
     await UserApi().clearCache();
     fetchListPagingCustomer();
+  }
+
+  Future fetchDetailCustomer(customerId) async {
+    dataDetailCustomer.clear();
+    final dataDetailCustomerRequest =
+        await CustomerApi().getDetailCustomerRequest(customerId);
+    if (dataDetailCustomerRequest['code'] == 0) {
+      dataDetailCustomer.value = dataDetailCustomerRequest['content'];
+      print(dataDetailCustomer);
+    } else {
+      Get.snackbar('Oh no!', 'Đã có lỗi xảy ra');
+    }
+    update();
   }
 
   Future fetchListPagingCustomer() async {

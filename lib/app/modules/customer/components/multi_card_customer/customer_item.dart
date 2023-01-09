@@ -204,7 +204,8 @@ Widget buildCustomerItem({required MarketingCustomerModel customerCardModel}) {
                           const Spacer(),
                           ElevatedBtn(
                             onPressed: () {
-                              showModelBottomSheet();
+                              showModelBottomSheet(customerCardModel.customerId,
+                                  customerCardModel.customerName);
                             },
                             circular: 50,
                             paddingAllValue: 0,

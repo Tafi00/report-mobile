@@ -20,18 +20,20 @@ class MainController extends GetxController {
     print(isAuthenticated);
     final prefs = await SharedPreferences.getInstance();
     UserApi().getUserInfo().then((value) {
-      List listRoleView = value['roleView'];
-      if (listRoleView.length == 1) {
-        roleView.value = listRoleView[0];
-        positive.value = roleView.value == 'BAORA' ? true : false;
-        isShowSwitch.value = false;
-      } else if (prefs.getString('roleView') == null) {
-        roleView.value = listRoleView[0];
-        positive.value = roleView.value == 'BAORA' ? true : false;
-        prefs.setString('roleView', roleView.value);
-      } else {
-        roleView.value = prefs.getString('roleView')!;
-        positive.value = roleView.value == 'BAORA' ? true : false;
+      if (value is! String) {
+        List? listRoleView = value?['roleView'];
+        if (listRoleView?.length == 1) {
+          roleView.value = listRoleView?[0];
+          positive.value = roleView.value == 'BAORA' ? true : false;
+          isShowSwitch.value = false;
+        } else if (prefs.getString('roleView') == null) {
+          roleView.value = listRoleView?[0];
+          positive.value = roleView.value == 'BAORA' ? true : false;
+          prefs.setString('roleView', roleView.value);
+        } else {
+          roleView.value = prefs.getString('roleView')!;
+          positive.value = roleView.value == 'BAORA' ? true : false;
+        }
       }
     });
   }

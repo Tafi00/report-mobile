@@ -10,7 +10,6 @@ import '../../../utils/constants.dart';
 
 Widget buildThirdCard() {
   return GetBuilder<DetailCustomerController>(
-    assignId: true,
     builder: (controller) {
       return Container(
         width: double.infinity,

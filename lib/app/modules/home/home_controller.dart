@@ -160,7 +160,7 @@ class HomeController extends GetxController {
       final prefs = await SharedPreferences.getInstance();
       prefs.clear();
       controller.selectedIndex.value = 0;
-      Get.toNamed(AppRoutes.login);
+      Get.offAllNamed(AppRoutes.login);
     }
   }
 

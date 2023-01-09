@@ -60,13 +60,29 @@ class CustomerApi {
   Future updateCustomerRequest(Map params, id) async {
     try {
       final accessToken = await getAccessToken();
-      final response = await dio.post(
+      final response = await dio.patch(
         '$updateCustomerApi$id',
-        options: Options(headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $accessToken"
-        }),
+        options: ops(accessToken),
         data: jsonEncode(params),
+      );
+      return response.data;
+    } on DioError catch (e) {
+      final response = e.response;
+      if (response != null) {
+        return response.data;
+      } else {
+        print(e.requestOptions);
+        print(e.message);
+      }
+    }
+  }
+
+  Future deleteCustomerRequest(id) async {
+    try {
+      final accessToken = await getAccessToken();
+      final response = await dio.delete(
+        '$deleteCustomerApi$id',
+        options: ops(accessToken),
       );
       return response.data;
     } on DioError catch (e) {
@@ -84,7 +100,7 @@ class CustomerApi {
     try {
       final accessToken = await getAccessToken();
       final response = await dio.post(
-        createCustomerApi,
+        createPlanApi,
         options: Options(headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $accessToken"

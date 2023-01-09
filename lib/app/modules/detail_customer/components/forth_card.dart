@@ -8,7 +8,6 @@ import '../../../utils/elevated_btn.dart';
 
 Widget buildForthCard() {
   return GetBuilder<DetailCustomerController>(
-    assignId: true,
     builder: (controller) {
       return Container(
         height: 50,
